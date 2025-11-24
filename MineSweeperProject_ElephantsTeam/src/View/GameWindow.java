@@ -144,6 +144,6 @@ public class GameWindow extends JFrame {
     }
     
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new GameWindow(Difficulty.MEDIUM));
+        SwingUtilities.invokeLater(() -> new GameWindow(Difficulty.HARD));
     }
 }
