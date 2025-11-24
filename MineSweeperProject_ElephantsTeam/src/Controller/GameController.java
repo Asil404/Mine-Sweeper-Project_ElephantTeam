@@ -6,51 +6,56 @@ import Model.Cell;
 
 public class GameController {
 
-    private Board board;
-    private boolean gameOver;
+    private Board board1; // Player 1
+    private Board board2; // Player 2
+    private boolean isPlayer1Turn;
+    // gameOver is kept just to stop clicks, but no "You Lose" logic is required yet.
+    private boolean gameOver; 
 
     public GameController(Difficulty difficulty) {
-        this.board = new Board(difficulty);
+        this.board1 = new Board(difficulty);
+        this.board2 = new Board(difficulty);
+        this.isPlayer1Turn = true; // Player 1 starts
         this.gameOver = false;
     }
 
-    // Left click: reveal a cell
-    public void handleLeftClick(int row, int col) {
-        if (gameOver) {
-            return;
-        }
+    public void handleLeftClick(int row, int col, int playerID) {
+        if (gameOver) return;
 
-        Cell cell = board.getCell(row, col);
+        // Enforce Turn Rules
+        if (playerID == 1 && !isPlayer1Turn) return;
+        if (playerID == 2 && isPlayer1Turn) return;
 
-        // If already revealed or flagged – do nothing
-        if (cell.isRevealed() || cell.isFlagged()) {
-            return;
-        }
+        Board currentBoard = (playerID == 1) ? board1 : board2;
+        Cell cell = currentBoard.getCell(row, col);
 
-        board.revealCell(row, col);
+        if (cell.isRevealed() || cell.isFlagged()) return;
 
+        currentBoard.revealCell(row, col);
+
+        // Simple turn switch logic
+        // (If you want hitting a mine to STOP the game, you can set gameOver = true here)
         if (cell.isMine()) {
-            // For now just mark game as over – later View will show message
-            gameOver = true;
+             System.out.println("Mine Hit!"); 
+             // gameOver = true; // Optional for Iteration 1
         }
-        // Later: we’ll notify the View to refresh here
+        
+        // Iteration 1: Just switch turns, no complex effects
+        isPlayer1Turn = !isPlayer1Turn;
     }
 
-    // Right click: toggle flag
-    public void handleRightClick(int row, int col) {
-        if (gameOver) {
-            return;
-        }
-        board.toggleFlag(row, col);
-        // Later: View refresh
+    public void handleRightClick(int row, int col, int playerID) {
+        if (gameOver) return;
+        
+        if (playerID == 1 && !isPlayer1Turn) return;
+        if (playerID == 2 && isPlayer1Turn) return;
+
+        Board currentBoard = (playerID == 1) ? board1 : board2;
+        currentBoard.toggleFlag(row, col);
     }
 
-    // Getter so the View can read the board state
-    public Board getBoard() {
-        return board;
-    }
-
-    public boolean isGameOver() {
-        return gameOver;
-    }
+    public Board getBoard1() { return board1; }
+    public Board getBoard2() { return board2; }
+    public boolean isPlayer1Turn() { return isPlayer1Turn; }
+    public boolean isGameOver() { return gameOver; }
 }
