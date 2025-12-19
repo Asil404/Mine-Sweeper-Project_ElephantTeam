@@ -8,6 +8,7 @@ public class Cell {
     private boolean isQuestion;
     private boolean isSurprise;
     private int adjacentMines;
+    //TESTING NOTE
 
     public Cell() {
         this.isMine = false;
