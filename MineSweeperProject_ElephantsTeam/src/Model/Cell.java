@@ -1,42 +1,48 @@
 package Model;
 
 public class Cell {
-
+    private int row, col;
     private boolean isMine;
     private boolean isRevealed;
     private boolean isFlagged;
+    private int adjacentMines;
+    
     private boolean isQuestion;
     private boolean isSurprise;
-    private int adjacentMines;
+    private boolean isQuestionWrong; 
+    
+    private boolean isUsed = false; 
 
-    public Cell() {
-        this.isMine = false;
-        this.isRevealed = false;
-        this.isFlagged = false;
-        this.isQuestion = false;
-        this.isSurprise = false;
-        this.adjacentMines = 0;
+    public Cell(int row, int col) {
+        this.row = row;
+        this.col = col;
     }
 
+    public void reveal() { this.isRevealed = true; this.isFlagged = false; }
+    public void toggleFlag() { this.isFlagged = !isFlagged; }
+
+    // Getters & Setters
     public boolean isMine() { return isMine; }
-    public void setMine(boolean mine) { this.isMine = mine; }
+    public void setMine(boolean mine) { isMine = mine; }
 
     public boolean isRevealed() { return isRevealed; }
-    public void reveal() { this.isRevealed = true; }
+    public void setRevealed(boolean revealed) { isRevealed = revealed; }
 
     public boolean isFlagged() { return isFlagged; }
-    public void toggleFlag() { if (!isRevealed) this.isFlagged = !this.isFlagged; }
-
-    public boolean isQuestion() { return isQuestion; }
-    public void setQuestion(boolean question) { isQuestion = question; }
-
-    public boolean isSurprise() { return isSurprise; }
-    public void setSurprise(boolean surprise) { isSurprise = surprise; }
+    public void setFlagged(boolean flagged) { isFlagged = flagged; }
 
     public int getAdjacentMines() { return adjacentMines; }
-    public void setAdjacentMines(int count) { this.adjacentMines = count; }
-
-    public boolean isEmpty() {
-        return !isMine && !isQuestion && !isSurprise && adjacentMines == 0;
-    }
+    public void setAdjacentMines(int adjacentMines) { this.adjacentMines = adjacentMines; }
+    
+    public boolean isQuestion() { return isQuestion; }
+    public void setQuestion(boolean q) { this.isQuestion = q; }
+    
+    public boolean isSurprise() { return isSurprise; }
+    public void setSurprise(boolean s) { this.isSurprise = s; }
+    
+    public boolean isQuestionWrong() { return isQuestionWrong; }
+    public void setQuestionWrong(boolean w) { this.isQuestionWrong = w; }
+    
+    public boolean isUsed() { return isUsed; }
+    public void setUsed(boolean used) { this.isUsed = used; }
 }
