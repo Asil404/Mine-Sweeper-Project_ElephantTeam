@@ -1,0 +1,21 @@
+ID,Question,Difficulty,A,B,C,D,Correct Answer
+1,Which data type is used to create a variable that should store text?,1,String,txt,string,Text,A
+2,How do you create a variable with the numeric value 5?,1,num x = 5,x = 5;,int x = 5;,float x = 5;,C
+3,Which method can be used to find the length of a string?,1,getSize(),length(),len(),getLength(),B
+4,Which operator is used to add together two values?,1,*,&,+,#,C
+5,To declare an array in Java define the variable type with:,1,{},(),[],<>,C
+6,Which keyword is used to import a package from the Java API library?,2,package,getlib,import,lib,C
+7,How do you start writing an if statement in Java?,2,if x > y,if (x > y),if x > y then,if [x > y],B
+8,Which statement is used to stop a loop?,2,stop,return,break,exit,C
+9,What is the correct way to create an object called myObj of MyClass?,2,class myObj = new MyClass();,new myObj = MyClass();,MyClass myObj = new MyClass();,Object myObj = new MyClass;,C
+10,Which access modifier makes the code accessible for all classes?,2,public,private,protected,default,A
+11,What is the time complexity of binary search?,3,O(n),O(n^2),O(log n),O(1),C
+12,Which collection stores data in key-value pairs?,3,ArrayList,HashSet,HashMap,LinkedList,C
+13,Which keyword is used to inherit a class?,3,implements,extends,inherits,super,B
+14,What is the result of 10 % 3?,3,3,10,0,1,D
+15,Which exception is thrown when dividing by zero?,3,NullPointerException,ArithmeticException,ArrayIndexOutOfBounds,NumberFormatException,B
+16,In the OSI model which layer is responsible for routing?,4,Data Link,Network,Transport,Session,B
+17,What does the keyword 'synchronized' guarantee in Java?,4,High performance,Thread safety,Memory efficiency,Garbage collection,B
+18,Which design pattern ensures a class has only one instance?,4,Factory,Observer,Singleton,Strategy,C
+19,What is the default value of a boolean variable in Java?,4,true,false,null,0,B
+20,Which interface does not allow duplicate elements?,4,List,Map,Set,Queue,C
