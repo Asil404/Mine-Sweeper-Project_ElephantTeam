@@ -22,7 +22,6 @@ public class SysData {
 
     public List<Question> getQuestions() { return questions; }
 
- // בתוך SysData.java
     private void loadQuestions() {
         questions.clear(); 
         File f = new File(CSV_FILE);
@@ -68,7 +67,6 @@ public class SysData {
         
         List<Question> matching = new ArrayList<>();
         for (Question q : questions) {
-            // שימוש ב-getLevel() המתוקן
             if (q.getLevel().equalsIgnoreCase(targetLevel)) {
                 matching.add(q);
             }
