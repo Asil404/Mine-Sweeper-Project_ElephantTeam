@@ -1,21 +1,21 @@
 ID,Question,Difficulty,A,B,C,D,Correct Answer
-1,Which data type is used to create a variable that should store text?,1,String,txt,string,Text,A
-2,How do you create a variable with the numeric value 5?,1,num x = 5,x = 5;,int x = 5;,float x = 5;,C
-3,Which method can be used to find the length of a string?,1,getSize(),length(),len(),getLength(),B
-4,Which operator is used to add together two values?,1,*,&,+,#,C
-5,To declare an array in Java define the variable type with:,1,{},(),[],<>,C
-6,Which keyword is used to import a package from the Java API library?,2,package,getlib,import,lib,C
-7,How do you start writing an if statement in Java?,2,if x > y,if (x > y),if x > y then,if [x > y],B
-8,Which statement is used to stop a loop?,2,stop,return,break,exit,C
-9,What is the correct way to create an object called myObj of MyClass?,2,class myObj = new MyClass();,new myObj = MyClass();,MyClass myObj = new MyClass();,Object myObj = new MyClass;,C
-10,Which access modifier makes the code accessible for all classes?,2,public,private,protected,default,A
-11,What is the time complexity of binary search?,3,O(n),O(n^2),O(log n),O(1),C
-12,Which collection stores data in key-value pairs?,3,ArrayList,HashSet,HashMap,LinkedList,C
-13,Which keyword is used to inherit a class?,3,implements,extends,inherits,super,B
-14,What is the result of 10 % 3?,3,3,10,0,1,D
-15,Which exception is thrown when dividing by zero?,3,NullPointerException,ArithmeticException,ArrayIndexOutOfBounds,NumberFormatException,B
-16,In the OSI model which layer is responsible for routing?,4,Data Link,Network,Transport,Session,B
-17,What does the keyword 'synchronized' guarantee in Java?,4,High performance,Thread safety,Memory efficiency,Garbage collection,B
-18,Which design pattern ensures a class has only one instance?,4,Factory,Observer,Singleton,Strategy,C
-19,What is the default value of a boolean variable in Java?,4,true,false,null,0,B
-20,Which interface does not allow duplicate elements?,4,List,Map,Set,Queue,C
+1,A startup expects requirements to change weekly based on user feedback. Which development approach best fits this scenario?,2,Waterfall,V-Model,Agile (Scrum),Big Bang,C
+2,A requirement states: 'The system should be fast.' What is the main problem with this requirement?,3,It is functional,It is ambiguous,It is too detailed,It is testable,B
+3,"During a formal inspection, defects are found before any code is written. What type of verification is this?",2,Dynamic verification,System testing,Static verification,Acceptance testing,C
+4,You are designing a system where business logic must not depend on the UI. Which architectural principle supports this?,4,High coupling,Low cohesion,Separation of concerns,Code reuse,C
+5,"After deployment, a bug is discovered that crashes the system. Which maintenance type is required?",1,Perfective,Adaptive,Corrective,Preventive,C
+6,Which testing technique designs test cases based on control-flow graphs?,3,Black-box testing,Regression testing,White-box testing,Acceptance testing,C
+7,"A system must support 10,000 concurrent users without degradation. This is an example of:",2,Functional requirement,Design constraint,Non-functional requirement,User requirement,C
+8,"In incremental development, what is the MAIN benefit delivered to the customer early?",2,Lower documentation,Complete system,Working partial functionality,Zero defects,C
+9,A project fails because teams interpret requirements differently. Which process was most likely weak?,4,Testing,Requirements elicitation,Coding,Maintenance,B
+10,Which activity best belongs to software evolution rather than initial development?,3,Unit testing,System design,Refactoring legacy code,Requirements analysis,C
+11,Which document acts as a contract between stakeholders and developers?,1,User manual,Design document,SRS,Test report,C
+12,"A review meeting focuses on finding defects, not solutions. What review rule is being applied?",3,Design freedom,Solution avoidance,Author dominance,Code execution,B
+13,Which architectural pattern best fits a system with frequent UI changes but stable logic?,2,Pipeline,Repository,MVC,Client-server,C
+14,A legacy system is critical to the business but poorly documented. What is the biggest risk?,4,Low performance,High maintenance cost,User resistance,Over-testing,B
+15,Which testing level validates interactions between integrated modules?,2,Unit testing,Integration testing,Regression testing,Acceptance testing,B
+16,A project team performs risk analysis at the end of every iteration. Which model are they following?,3,Waterfall,V-Model,Spiral,Code-and-fix,C
+17,A vague requirement leads to multiple interpretations and rework. What is the most likely outcome?,4,Higher quality,Reduced cost,Increased defects,Faster delivery,C
+18,Who is responsible for managing the review meeting and enforcing procedures?,2,Author,Reviewer,Moderator,Tester,C
+19,Improving system usability without changing its functionality is an example of:,2,Corrective maintenance,Adaptive maintenance,Perfective maintenance,Preventive maintenance,C
+20,"After adding a new feature, old features stop working. Which test would have prevented this?",1,Stress testing,Regression testing,System testing,Alpha testing,B
