@@ -14,7 +14,6 @@ public class Question {
         this.level = level;
     }
 
-    // בנאי תואם לאחור (למקרה שיש קוד ישן שיוצר שאלות בלי רמה)
     public Question(String questionText, String[] answers, int correctAnsIndex) {
         this(questionText, answers, correctAnsIndex, "Medium"); // ברירת מחדל: בינוני
     }
@@ -29,12 +28,10 @@ public class Question {
         return answers;
     }
 
-    // ✅ זו הפונקציה שהייתה חסרה לך!
     public int getCorrectAnsIndex() {
         return correctAnsIndex;
     }
 
-    // ✅ וגם זו הייתה חסרה לך!
     public String getLevel() {
         return level;
     }
@@ -43,7 +40,6 @@ public class Question {
         this.level = level;
     }
     
-    // לשימוש ב-AdminWindow (אם צריך להציג בטבלה)
     @Override
     public String toString() {
         return questionText; 
