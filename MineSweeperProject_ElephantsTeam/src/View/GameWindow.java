@@ -4,6 +4,8 @@ import Controller.GameController;
 import Model.Board;
 import Model.Cell;
 import Model.Difficulty;
+import Logic.GameTimer;
+import Logic.GameObserver;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -11,16 +13,15 @@ import java.awt.*;
 import java.awt.event.*;
 import java.awt.geom.RoundRectangle2D;
 import java.awt.geom.Line2D;
-import java.awt.image.BufferedImage; 
+import java.awt.image.BufferedImage;
 import java.util.Random;
 
-public class GameWindow extends JFrame {
+public class GameWindow extends JFrame implements GameObserver {
 
     private GameController controller;
     private ModernButton[][] buttons1;
     private ModernButton[][] buttons2;
     
-    // --- תוויות נפרדות לכל רכיב ---
     private JLabel lblTurn;
     private JLabel lblTimer;
     private JLabel lblScore;
@@ -30,8 +31,8 @@ public class GameWindow extends JFrame {
     private String p1Name, p2Name;
     private String p1Avatar, p2Avatar;
     
-    private Timer gameTimer;
-    private int secondsPlayed = 0;
+    private GameTimer gameTimer;
+    
     private boolean devMode = false;
     private JButton pauseBtn, homeBtn, themeBtn, restartBtn;
     private JProgressBar progressBar;
@@ -49,42 +50,56 @@ public class GameWindow extends JFrame {
         this.p2Avatar = p2Avatar;
 
         this.controller = new GameController(difficulty, p1Name, p2Name);
-        this.controller.setViewFrame(this);
 
         setTitle("MineSweeper - Pro Edition");
-        setExtendedState(JFrame.MAXIMIZED_BOTH); // מסך מלא
-        setUndecorated(true);                    // ללא מסגרת
+        setExtendedState(JFrame.MAXIMIZED_BOTH); 
+        setUndecorated(true);                    
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         
         applyThemeColors();
-        
         setContentPane(new BackgroundPanel());
         setLayout(new BorderLayout());
 
         setCustomCursor(); 
 
-        this.setFocusable(true);
-        this.addKeyListener(new KeyAdapter() {
+        // --- Key Bindings ---
+        JRootPane root = this.getRootPane();
+        InputMap inputMap = root.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
+        ActionMap actionMap = root.getActionMap();
+
+        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_D, 0), "devMode");
+        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_P, 0), "pause");
+        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_R, 0), "restart");
+
+        actionMap.put("devMode", new AbstractAction() {
             @Override
-            public void keyPressed(KeyEvent e) {
-                if (e.getKeyCode() == KeyEvent.VK_D) toggleDevMode();
-                if (e.getKeyCode() == KeyEvent.VK_P) togglePauseGame(); 
-                if (e.getKeyCode() == KeyEvent.VK_R) restartGame(); 
+            public void actionPerformed(ActionEvent e) {
+                toggleDevMode();
             }
         });
 
-        // =================================================================
-        // 1. פאנל עליון (Top HUD)
-        // =================================================================
+        actionMap.put("pause", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                togglePauseGame();
+            }
+        });
+
+        actionMap.put("restart", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                restartGame();
+            }
+        });
+
+        // --- UI Construction ---
         JPanel topPanel = new JPanel(new BorderLayout());
         topPanel.setOpaque(false);
         topPanel.setBorder(new EmptyBorder(10, 20, 10, 20));
 
-        // --- צד שמאל: כפתורים + תור ---
         JPanel leftContainer = new JPanel(new FlowLayout(FlowLayout.LEFT, 15, 0));
         leftContainer.setOpaque(false);
         
-        // כפתורים
         homeBtn = new JButton("🏠"); styleControlButton(homeBtn); homeBtn.addActionListener(e -> returnToHome());
         restartBtn = new JButton("🔄"); styleControlButton(restartBtn); restartBtn.addActionListener(e -> restartGame());
         pauseBtn = new JButton("⏸"); styleControlButton(pauseBtn); pauseBtn.addActionListener(e -> togglePauseGame());
@@ -100,14 +115,12 @@ public class GameWindow extends JFrame {
         sep.setForeground(new Color(255,255,255,50));
         leftContainer.add(sep);
         
-        // שם השחקן
         lblTurn = new JLabel();
         lblTurn.setFont(new Font("Segoe UI", Font.BOLD, 20));
         leftContainer.add(lblTurn);
         
         topPanel.add(leftContainer, BorderLayout.WEST);
 
-        // --- אמצע: טיימר ---
         JPanel centerContainer = new JPanel(new FlowLayout(FlowLayout.CENTER));
         centerContainer.setOpaque(false);
         lblTimer = new JLabel("00:00");
@@ -116,7 +129,6 @@ public class GameWindow extends JFrame {
         centerContainer.add(lblTimer);
         topPanel.add(centerContainer, BorderLayout.CENTER);
 
-        // --- ימין: ניקוד ---
         JPanel rightContainer = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         rightContainer.setOpaque(false);
         lblScore = new JLabel("Score: 0");
@@ -127,9 +139,6 @@ public class GameWindow extends JFrame {
 
         add(topPanel, BorderLayout.NORTH);
 
-        // =================================================================
-        // 2. פאנל מרכזי: הלוחות
-        // =================================================================
         boardsContainer = new JPanel();
         cardLayout = new CardLayout();
         boardsContainer.setLayout(cardLayout);
@@ -141,15 +150,12 @@ public class GameWindow extends JFrame {
         gbc.insets = new Insets(0, 40, 0, 40); 
         gbc.gridy = 0;
 
-        // לוח 1
         gbc.gridx = 0;
         gameGridPanel.add(createBoardPanel(controller.getBoard1(), 1, p1Name, p1Avatar), gbc);
 
-        // לוח 2
         gbc.gridx = 1;
         gameGridPanel.add(createBoardPanel(controller.getBoard2(), 2, p2Name, p2Avatar), gbc);
         
-        // מסך השהייה
         JPanel pausedPanel = new JPanel(new GridBagLayout());
         pausedPanel.setOpaque(false);
         JLabel pauseLabel = new JLabel("<html><center><h1>GAME PAUSED</h1><br><font size='7'>🔒</font></center></html>");
@@ -160,9 +166,6 @@ public class GameWindow extends JFrame {
         boardsContainer.add(pausedPanel, "PAUSED");
         add(boardsContainer, BorderLayout.CENTER);
 
-        // =================================================================
-        // 3. פאנל תחתון (Bottom HUD): חיים
-        // =================================================================
         JPanel bottomPanel = new JPanel(new BorderLayout());
         bottomPanel.setOpaque(false);
         bottomPanel.setBorder(new EmptyBorder(0, 20, 20, 20));
@@ -189,13 +192,39 @@ public class GameWindow extends JFrame {
         
         add(bottomPanel, BorderLayout.SOUTH);
 
+        this.controller.setViewFrame(this);
+
         updateHUD();
         setVisible(true);
-        startTimer();
+        
+        // --- Observer Registration ---
+        this.gameTimer = new GameTimer();
+        this.gameTimer.addObserver(this); 
+        this.gameTimer.start();
     }
     
-    // --- עדכון הממשק ---
+    @Override
+    public void onTimeUpdate(int seconds) {
+        if (lblTimer != null) {
+            lblTimer.setText(String.format("%02d:%02d", seconds / 60, seconds % 60));
+        }
+    }
+
+    public void updateTimer(String timeStr) {
+        if (lblTimer != null) lblTimer.setText(timeStr);
+    }
+    
+    public void updateScore(int score) {
+        if (lblScore != null) lblScore.setText("Score: " + score);
+    }
+
+    public void updateLives(int lives) {
+        if (lblLives != null) lblLives.setText(getHeartsString(lives));
+    }
+
     private void updateHUD() {
+        if (lblTurn == null || lblScore == null || lblLives == null) return;
+
         String currentAvatar = controller.isPlayer1Turn() ? p1Avatar : p2Avatar;
         String currentPlayer = controller.getCurrentPlayerName();
         String colorHex = controller.isPlayer1Turn() ? "#a29bfe" : "#ff7675"; 
@@ -203,7 +232,6 @@ public class GameWindow extends JFrame {
         lblTurn.setText("<html><span style='font-family: Segoe UI Emoji; font-size: 24px; color: white;'>" + currentAvatar + "</span> " 
                         + "<span style='font-family: Segoe UI; font-size: 20px; color: " + colorHex + ";'>" + currentPlayer.toUpperCase() + "</span></html>");
 
-        lblTimer.setText(String.format("%02d:%02d", secondsPlayed / 60, secondsPlayed % 60));
         lblScore.setText("SCORE: " + controller.getScore());
         lblLives.setText(getHeartsString(controller.getLives()));
         
@@ -218,7 +246,6 @@ public class GameWindow extends JFrame {
         return sb.toString();
     }
     
-    // --- יצירת לוח ---
     private JPanel createBoardPanel(Board board, int playerID, String playerName, String avatar) {
         int rows = board.getRows();
         int cols = board.getCols();
@@ -295,19 +322,30 @@ public class GameWindow extends JFrame {
         repaint(); 
     }
     
+    // --- UPDATED METHOD: Correctly handles Question Wrong vs Right ---
     private void updateBoardGrid(Board board, ModernButton[][] buttons) {
         int rows = board.getRows(); int cols = board.getCols();
         for (int r = 0; r < rows; r++) {
             for (int c = 0; c < cols; c++) {
                 Cell cell = board.getCell(r, c);
                 ModernButton button = buttons[r][c];
-                button.setUsed(cell.isUsed()); 
+                
+                button.setUsed(cell.isUsed());
+                button.setWrong(cell.isQuestionWrong()); // <--- PASSING THE WRONG STATE
+                
                 if (cell.isRevealed()) {
                     button.setRevealed(true);
-                    if (cell.isMine()) button.setSymbol("💣", new Color(231, 76, 60)); 
-                    else if (cell.isQuestionWrong()) button.setSymbol("❌", Color.RED);
-                    else if (cell.isQuestion()) button.setSymbol("?", new Color(241, 196, 15)); 
-                    else if (cell.isSurprise()) button.setSymbol("🎁", new Color(155, 89, 182)); 
+                    
+                    if (cell.isMine()) {
+                        button.setSymbol("💣", new Color(231, 76, 60));
+                    }
+                    else if (cell.isQuestion()) {
+                        // We set it as a Question. The Button logic decides ? vs X vs V
+                        button.setSymbol("?", new Color(241, 196, 15)); 
+                    }
+                    else if (cell.isSurprise()) {
+                        button.setSymbol("🎁", new Color(155, 89, 182));
+                    }
                     else {
                         int adj = cell.getAdjacentMines();
                         button.setSymbol(adj > 0 ? String.valueOf(adj) : "", getColorForNumber(adj));
@@ -318,9 +356,15 @@ public class GameWindow extends JFrame {
                     button.setRevealed(false); button.setFlagged(false); button.setSymbol("", colorText);
                 }
                 
-                if (devMode && cell.isMine() && !cell.isRevealed()) button.setBorder(BorderFactory.createLineBorder(Color.RED, 2));
-                else button.setBorder(null);
-                button.repaint(); 
+                if (devMode && cell.isMine() && !cell.isRevealed()) {
+                    button.setBorder(BorderFactory.createLineBorder(Color.RED, 3));
+                    button.setBorderPainted(true);
+                } else {
+                    button.setBorder(null);
+                    button.setBorderPainted(false);
+                }
+                
+                button.repaint();
             }
         }
     }
@@ -360,7 +404,6 @@ public class GameWindow extends JFrame {
         new FloatingLabel(text, p.x + 10, p.y - 10, color, getLayeredPane());
     }
 
-    // --- ריסטארט מעודכן עם CustomDialog ---
     private void restartGame() {
         if (gameTimer != null) gameTimer.stop();
         
@@ -374,7 +417,6 @@ public class GameWindow extends JFrame {
         }
     }
 
-    // --- חזרה לבית מעודכנת עם CustomDialog ---
     private void returnToHome() {
         boolean wasPaused = controller.isPaused();
         if (!wasPaused) gameTimer.stop(); 
@@ -392,18 +434,16 @@ public class GameWindow extends JFrame {
     private void togglePauseGame() {
         controller.togglePause();
         if (controller.isPaused()) {
-            gameTimer.stop(); cardLayout.show(boardsContainer, "PAUSED"); 
+            gameTimer.stop(); 
+            cardLayout.show(boardsContainer, "PAUSED"); 
             pauseBtn.setText("▶"); pauseBtn.setForeground(new Color(46, 213, 115));
         } else {
-            gameTimer.start(); cardLayout.show(boardsContainer, "GAME"); 
+            gameTimer.start(); 
+            cardLayout.show(boardsContainer, "GAME"); 
             pauseBtn.setText("⏸"); pauseBtn.setForeground(colorText);
         }
     }
-
-    private void startTimer() {
-        gameTimer = new Timer(1000, e -> { secondsPlayed++; updateHUD(); });
-        gameTimer.start();
-    }
+    
     public void updateStats() {
         updateHUD();
     }
@@ -411,7 +451,16 @@ public class GameWindow extends JFrame {
     private void showGameOverDialog() {
         if (gameTimer != null) gameTimer.stop();
         this.dispose(); 
-        new GameOverWindow(controller.getScore(), controller.isVictory());
+        
+        new GameOverWindow(
+            controller.getScore(), 
+            controller.isVictory(),
+            currentDiff,  
+            p1Name,        
+            p2Name,        
+            p1Avatar,      
+            p2Avatar      
+        );
     }
     
     private void toggleDevMode() { devMode = !devMode; refreshView(); }
@@ -469,9 +518,11 @@ public class GameWindow extends JFrame {
         }
     }
 
+    // --- UPDATED MODERN BUTTON CLASS ---
     private class ModernButton extends JButton {
-        private boolean isRevealed = false; 
+        private boolean isRevealed = false;
         private boolean isFlagged = false;
+        private boolean isWrong = false; // New: Tracks wrong answers
         private String symbol = ""; 
         private Color symbolColor = Color.WHITE; 
         private boolean isHovered = false;
@@ -494,6 +545,7 @@ public class GameWindow extends JFrame {
         
         public void setRevealed(boolean r) { this.isRevealed = r; }
         public void setFlagged(boolean f) { this.isFlagged = f; }
+        public void setWrong(boolean w) { this.isWrong = w; } 
         public void setSymbol(String s, Color c) { this.symbol = s; this.symbolColor = c; }
         public void setUsed(boolean u) { this.isUsed = u; }
 
@@ -525,10 +577,15 @@ public class GameWindow extends JFrame {
                         ? new Font("Segoe UI Emoji", Font.PLAIN, fontSize) 
                         : new Font("Segoe UI", Font.BOLD, fontSize);
 
-                if (isUsed && (symbol.equals("?") || symbol.equals("🎁"))) {
-                     drawCenteredString(g2, "✔", w, h, f, Color.GREEN.darker());
-                } else {
-                     drawCenteredString(g2, symbol, w, h, f, symbolColor);
+                // --- PRIORITY LOGIC ---
+                if (isWrong) {
+                    drawCenteredString(g2, "❌", w, h, f, Color.RED); // Wrong Answer
+                } 
+                else if (isUsed && (symbol.equals("?") || symbol.equals("🎁"))) {
+                    drawCenteredString(g2, "✔", w, h, f, Color.GREEN.darker()); // Correct Answer
+                } 
+                else {
+                    drawCenteredString(g2, symbol, w, h, f, symbolColor); // Default
                 }
             }
             g2.dispose();

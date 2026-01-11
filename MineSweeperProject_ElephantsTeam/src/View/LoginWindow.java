@@ -10,11 +10,13 @@ import java.awt.geom.RoundRectangle2D;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import Logic.GameFactory;
+import Logic.AbstractGame;
 
 public class LoginWindow extends JFrame {
 
     private JTextField p1NameField, p2NameField;
-    private final String[] AVATARS = {"👤", "🤖", "👽", "🦊", "☠️", "👾", "🤡", "👻", "🐱‍"};
+    private final String[] AVATARS = {"👤", "🤖", "👽", "🦊", "👾", "🤡", "👻", "🐱‍"};
     private int p1AvatarIndex = 0, p2AvatarIndex = 1;
     private JButton p1AvatarBtn, p2AvatarBtn;
     
@@ -201,16 +203,27 @@ public class LoginWindow extends JFrame {
     
     private void startGame() {
         animTimer.stop();
-        // השדות כבר מכילים את הדיפולט אם המשתמש לא נגע בהם, אז רק צריך לקרוא את הטקסט
+        
+        // קריאת הטקסט מהשדות
         String n1 = p1NameField.getText();
         String n2 = p2NameField.getText();
         
-        // הגנה נוספת (למקרה שמישהו מחק הכל ועזב)
-        if(n1.trim().isEmpty()) n1 = "Player 1";
-        if(n2.trim().isEmpty()) n2 = "Player 2";
+        if(n1.trim().isEmpty() || n1.equals("Player 1")) n1 = "Player 1";
+        if(n2.trim().isEmpty() || n2.equals("Player 2")) n2 = "Player 2";
         
-        dispose();
-        new GameWindow(selectedDifficulty, n1, n2, AVATARS[p1AvatarIndex], AVATARS[p2AvatarIndex]);
+        dispose(); // סגירת חלון הלוגין
+
+        // --- כאן נכנסות התבניות (השינוי) ---
+        
+        // 1. יצירת המפעל
+        GameFactory factory = new GameFactory();
+        
+        // 2. יצירת המשחק דרך המפעל (Factory Method)
+        // אנחנו מעבירים לו את כל מה שהמשתמש בחר
+        AbstractGame game = factory.createGame(selectedDifficulty, n1, n2, AVATARS[p1AvatarIndex], AVATARS[p2AvatarIndex]);
+        
+        // 3. הפעלת המשחק דרך התבנית (Template Method)
+        game.play();
     }
     
     private JButton createDiffButton(String t, Color c, Difficulty d) {
