@@ -31,24 +31,35 @@ public class SysData {
         try (BufferedReader br = new BufferedReader(new FileReader(CSV_FILE))) {
             br.readLine(); // דילוג על כותרת
             while ((line = br.readLine()) != null) {
-                String[] data = line.split(",");
+                // --- התיקון נמצא בשורה הזו ---
+                // הביטוי הזה מפצל לפי פסיקים, אבל מתעלם מפסיקים שנמצאים בתוך מרכאות
+                String[] data = line.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
+                
                 if (data.length >= 8) {
                     try {
-                        String qText = data[1].trim(); 
-                        String diffNum = data[2].trim();
+                        // אנחנו מוסיפים גם ניקוי של מרכאות מיותרות (replace) למקרה שהאקסל הוסיף אותן
+                        String qText = data[1].trim().replace("\"", ""); 
+                        String diffStr = data[2].trim().replace("\"", "");
                         
-                        // --- תיקון: זיהוי 4 רמות ---
                         String level;
-                        switch (diffNum) {
-                            case "1": level = "Easy"; break;
-                            case "2": level = "Medium"; break;
-                            case "3": level = "Hard"; break;
-                            case "4": level = "Expert"; break; // הוספנו את זה!
-                            default: level = "Medium";
+                        if (diffStr.equals("4") || diffStr.equalsIgnoreCase("Expert")) {
+                            level = "Expert";
+                        } else if (diffStr.equals("3") || diffStr.equalsIgnoreCase("Hard")) {
+                            level = "Hard";
+                        } else if (diffStr.equals("2") || diffStr.equalsIgnoreCase("Medium")) {
+                            level = "Medium";
+                        } else {
+                            level = "Easy";
                         }
                         
-                        String[] answers = { data[3].trim(), data[4].trim(), data[5].trim(), data[6].trim() };
-                        String correctStr = data[7].trim().toUpperCase();
+                        String[] answers = { 
+                            data[3].trim().replace("\"", ""), 
+                            data[4].trim().replace("\"", ""), 
+                            data[5].trim().replace("\"", ""), 
+                            data[6].trim().replace("\"", "") 
+                        };
+                        
+                        String correctStr = data[7].trim().toUpperCase().replace("\"", "");
                         int correctIdx = correctStr.equals("D") ? 3 : (correctStr.equals("C") ? 2 : (correctStr.equals("B") ? 1 : 0));
                         
                         questions.add(new Question(qText, answers, correctIdx, level));
@@ -58,26 +69,10 @@ public class SysData {
         } catch (IOException e) { e.printStackTrace(); }
     }
 
-    // --- הפונקציה החשובה למשחק: שליפה לפי רמה ---
-    public Question getQuestionByLevel(Difficulty gameDiff) {
+    // הפונקציה שביקשת - מחזירה שאלה רנדומלית מכל המאגר
+    public Question getRandomQuestion() {
         if (questions.isEmpty()) return null;
-        
-        // התאמת הרמה של המשחק למחרוזת בקובץ
-        String targetLevel = (gameDiff == Difficulty.HARD) ? "Hard" : ((gameDiff == Difficulty.MEDIUM) ? "Medium" : "Easy");
-        
-        List<Question> matching = new ArrayList<>();
-        for (Question q : questions) {
-            if (q.getLevel().equalsIgnoreCase(targetLevel)) {
-                matching.add(q);
-            }
-        }
-        
-        // גיבוי למקרה שאין שאלות ברמה הזו - מחזיר שאלה רנדומלית כלשהי
-        if (matching.isEmpty()) {
-            return questions.get(new Random().nextInt(questions.size()));
-        }
-        
-        return matching.get(new Random().nextInt(matching.size()));
+        return questions.get(new Random().nextInt(questions.size()));
     }
 
     // --- פונקציות לאדמין ---
@@ -99,8 +94,15 @@ public class SysData {
             
             for (int i = 0; i < questions.size(); i++) {
                 Question q = questions.get(i);
-                // המרה חזרה למספרים עבור ה-CSV
-                String diffNum = q.getLevel().equalsIgnoreCase("Hard") ? "3" : (q.getLevel().equalsIgnoreCase("Medium") ? "2" : "1");
+                
+                // --- תיקון קריטי בשמירה: המרה נכונה של כל 4 הרמות למספרים ---
+                String diffNum;
+                String lvl = q.getLevel(); // לשם נוחות
+                
+                if (lvl.equalsIgnoreCase("Expert")) diffNum = "4";
+                else if (lvl.equalsIgnoreCase("Hard")) diffNum = "3";
+                else if (lvl.equalsIgnoreCase("Medium")) diffNum = "2";
+                else diffNum = "1"; // Easy
                 
                 String correctChar = q.getCorrectAnsIndex() == 3 ? "D" : (q.getCorrectAnsIndex() == 2 ? "C" : (q.getCorrectAnsIndex() == 1 ? "B" : "A"));
                 

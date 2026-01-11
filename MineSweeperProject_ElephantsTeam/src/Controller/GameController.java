@@ -174,8 +174,8 @@ public class GameController {
     }
     
     private void handleQuestion(Cell cell, Board board) {
-        Question q = SysData.getInstance().getQuestionByLevel(currentDifficulty);
-        if (q == null || viewFrame == null) return;
+    	Question q = SysData.getInstance().getRandomQuestion();
+    	if (q == null || viewFrame == null) return;
 
         QuestionPopup popup = new QuestionPopup(viewFrame, q);
         popup.setVisible(true); 

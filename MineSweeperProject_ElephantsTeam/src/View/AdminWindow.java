@@ -513,7 +513,7 @@ public class AdminWindow extends JFrame {
         gbc.gridx = 0; gbc.gridy = 3; gbc.weightx = 0.1; panel.add(createLabel("Correct Answer:"), gbc);
         gbc.gridx = 1; gbc.gridy = 3; gbc.weightx = 0.4; correctAnsBox = createStyledCombo(new String[]{"Answer A", "Answer B", "Answer C", "Answer D"}); panel.add(correctAnsBox, gbc);
         gbc.gridx = 2; gbc.gridy = 3; gbc.weightx = 0.1; panel.add(createLabel("Difficulty:"), gbc);
-        gbc.gridx = 3; gbc.gridy = 3; gbc.weightx = 0.4; levelBox = createStyledCombo(new String[]{"1 (Easy)", "2 (Medium)", "3 (Hard)"}); panel.add(levelBox, gbc);
+        gbc.gridx = 3; gbc.gridy = 3; gbc.weightx = 0.4; levelBox = createStyledCombo(new String[]{"1 (Easy)", "2 (Medium)", "3 (Hard)","4 (Expert)"}); panel.add(levelBox, gbc);
     }
 
     private void loadTableData() {
