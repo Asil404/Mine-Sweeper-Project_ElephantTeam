@@ -8,7 +8,23 @@ import java.util.Random;
 public class SysData {
     private static SysData instance;
     private List<Question> questions;
-    private final String CSV_FILE = "questions.csv";
+    private final String CSV_FILE = getAppDir() + File.separator + "questions.csv";
+
+    private static String getAppDir() {
+        try {
+            File codeSource = new File(SysData.class.getProtectionDomain()
+                    .getCodeSource().getLocation().toURI());
+
+            if (codeSource.isFile()) {
+                return codeSource.getParentFile().getAbsolutePath();
+            }
+
+            return System.getProperty("user.dir");
+        } catch (Exception e) {
+            return System.getProperty("user.dir");
+        }
+    }
+
 
     private SysData() {
         questions = new ArrayList<>();
@@ -23,6 +39,9 @@ public class SysData {
     public List<Question> getQuestions() { return questions; }
 
     private void loadQuestions() {
+    	
+    	
+    	
         questions.clear(); 
         File f = new File(CSV_FILE);
         if (!f.exists()) return;
