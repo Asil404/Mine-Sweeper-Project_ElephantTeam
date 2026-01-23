@@ -81,9 +81,9 @@ public class LoginWindow extends JFrame {
 
         gbc.gridy++;
         // כאן אנחנו יוצרים את השדות עם ה-Placeholder
-        mainPanel.add(createStyledInput("Player 1", 1), gbc);
+        mainPanel.add(createStyledInput("Player1", 1), gbc);
         gbc.gridy++;
-        mainPanel.add(createStyledInput("Player 2", 2), gbc);
+        mainPanel.add(createStyledInput("Player2", 2), gbc);
 
         gbc.gridy++;
         JLabel diffLabel = new JLabel("SELECT DIFFICULTY");
